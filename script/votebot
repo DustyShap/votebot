@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python3 ./votebot/votebot.py $1 $2
