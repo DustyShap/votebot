@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python3 ./votebot/votebot_finals.py $1 $2

@@ -26,12 +26,12 @@ ZIP_CODES = [63123,63021,63011,63137,63134,63144,63044,
 
 
 def get_job_data(job):
-    with open('jobs.csv') as jobs:
+    with open('jobs_final.csv') as jobs:
         reader = csv.reader(jobs)
         next(reader)
         for row in reader:
             if row[0] == job:
-                print(f'Found bot job for {row[1]}!')
+                print(f'Found bot job for {row[0]}!')
                 return row
         print('No matching jobs!')
 
@@ -44,7 +44,6 @@ def get_options():
     options.add_argument("start-maximized")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
-    # options.add_argument(f'--proxy-server={proxy}')
     return options
 
 def random_year():
@@ -52,14 +51,6 @@ def random_year():
     year_choice = choice(years)
     return str(year_choice)
 
-# def get_proxies():
-#     driver = webdriver.Chrome('./chromedriver')
-#     driver.get("https://sslproxies.org/")
-#     driver.execute_script("return arguments[0].scrollIntoView(true);", WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//table[@class='table table-striped table-bordered dataTable']//th[contains(., 'IP Address')]"))))
-#     ips = [my_elem.get_attribute("innerHTML") for my_elem in WebDriverWait(driver, 5).until(EC.visibility_of_all_elements_located((By.XPATH, "//table[@class='table table-striped table-bordered dataTable']//tbody//tr[@role='row']/td[position() = 1]")))]
-#     ports = [my_elem.get_attribute("innerHTML") for my_elem in WebDriverWait(driver, 5).until(EC.visibility_of_all_elements_located((By.XPATH, "//table[@class='table table-striped table-bordered dataTable']//tbody//tr[@role='row']/td[position() = 2]")))]
-#     driver.quit()
-#     return [f'{ips[i]}:{ports[i]}' for i in range(0, len(ips))]
 
 
 def run(category, iterations):
@@ -75,63 +66,89 @@ def run(category, iterations):
             chosen_row = choice(list(reader))
             # chosen_proxy = choice(proxy_list)
             driver = webdriver.Chrome('./chromedriver', options=get_options())
-            # driver = webdriver.Chrome('./chromedriver', options=get_options())
 
-            # print(f'Chosen Proxy: {chosen_proxy}')
-            driver.get(job_data[2])
-
+            # Open URL in webdriver
+            driver.get(job_data[1])
             time.sleep(5)
-            parent = driver.find_element_by_id(job_data[3])
-            parent.click()
+            strode_element = driver.find_element_by_xpath("//*[contains(text(), 'Strode')]")
+            strode_element.click()
+            time.sleep(4)
 
+            vote = driver.find_element_by_css_selector('button.vote-button')
+            vote.click()
 
-            # NEED A BETTER WAY TO GET THIS
             time.sleep(2)
-            your_nomination = driver.find_element(By.XPATH, '//input')
-            your_nomination.clear()
-            your_nomination.send_keys(job_data[1])
-
-
-            time.sleep(3)
             email = driver.find_element_by_class_name('ssEmailTextboxField')
             email.send_keys(chosen_row[2])
-            print(f"Filling in email address with {chosen_row[2]}")
-            time.sleep(2)
+            print(f"Filling in email input with {chosen_row[2]}")
+            time.sleep(1)
             email.send_keys(Keys.RETURN)
-            time.sleep(2)
+            time.sleep(4)
 
-            try:
-                first_name = driver.find_element_by_xpath('//span[text()="First Name"]/following::span/following::input')
-                first_name.clear()
-                print(f"Filling in first name with {chosen_row[0]}")
-                first_name.send_keys(chosen_row[0])
-            except NoSuchElementException:
-                driver.close()
-                print("Can't get around the captcha")
-                time.sleep(2)
-                continue
+            # try:
+            first_name = driver.find_element_by_xpath('//span[text()="First Name"]/following::span/following::input')
+            first_name.clear()
+            print(f"Filling in first name with {chosen_row[0]}")
+            first_name.send_keys(chosen_row[0])
+            time.sleep(1)
 
             last_name = driver.find_element_by_xpath('//span[text()="Last Name"]/following::span/following::input')
             last_name.clear()
+            print(f"Filling in first name with {chosen_row[1]}")
             last_name.send_keys(chosen_row[1])
-            print(f"Filling in last name with {chosen_row[1]}")
+            time.sleep(1)
 
             postal_code = driver.find_element_by_xpath('//span[text()="Postal Code"]/following::span/following::input')
             postal_code.clear()
             zip_code = choice(ZIP_CODES)
             postal_code.send_keys(str(zip_code))
+            time.sleep(1)
 
             birthdate = driver.find_element_by_xpath('//span[text()="Birthdate"]/following::input')
-            birthdate.send_keys(f'{randrange(12)}/{randrange(27)}/19{random_year()}')
+            birthdate.send_keys(f'{randrange(12)}{randrange(27)}19{random_year()}')
             birthdate.send_keys(Keys.RETURN)
+            time.sleep(10)
 
-            time.sleep(2)
-            driver.close()
-            count +=1
-            time.sleep(5)
-            print(count)
-    print(f'Successful submissions: {count}')
 
+    #         email = driver.find_element_by_class_name('ssEmailTextboxField')
+    #         email.send_keys(chosen_row[2])
+    #         print(f"Filling in email address with {chosen_row[2]}")
+    #         time.sleep(2)
+    #         email.send_keys(Keys.RETURN)
+    #         time.sleep(2)
+    #
+    #         try:
+    #             first_name = driver.find_element_by_xpath('//span[text()="First Name"]/following::span/following::input')
+    #             first_name.clear()
+    #             print(f"Filling in first name with {chosen_row[0]}")
+    #             first_name.send_keys(chosen_row[0])
+    #         except NoSuchElementException:
+    #             driver.close()
+    #             print("Can't get around the captcha")
+    #             time.sleep(2)
+    #             continue
+    #
+    #         last_name = driver.find_element_by_xpath('//span[text()="Last Name"]/following::span/following::input')
+    #         last_name.clear()
+    #         last_name.send_keys(chosen_row[1])
+    #         print(f"Filling in last name with {chosen_row[1]}")
+    #
+    #         postal_code = driver.find_element_by_xpath('//span[text()="Postal Code"]/following::span/following::input')
+    #         postal_code.clear()
+    #         zip_code = choice(ZIP_CODES)
+    #         postal_code.send_keys(str(zip_code))
+    #
+    #         birthdate = driver.find_element_by_xpath('//span[text()="Birthdate"]/following::input')
+    #         birthdate.send_keys(f'{randrange(12)}/{randrange(27)}/19{random_year()}')
+    #         birthdate.send_keys(Keys.RETURN)
+    #
+    #         time.sleep(2)
+    #         driver.close()
+    #         count +=1
+    #         time.sleep(5)
+    #         print(count)
+    # print(f'Successful submissions: {count}')
+    #
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
