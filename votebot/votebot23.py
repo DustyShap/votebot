@@ -47,13 +47,12 @@ def get_options(proxy):
     print(f"Using user agent {userAgent}")
     options.add_argument(f'user-agent={userAgent}')
     # options.add_argument("start-maximized")
-    options.add_argument("window-size=1400,600")
-    options.add_argument('disable-infobars')
-    options.add_experimental_option("detach", True)
+    # options.add_argument("window-size=1400,600")
+    # options.add_argument('disable-infobars')
+    # options.add_experimental_option("detach", True)
+    options.add_argument("--disable-blink-features")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    options.add_experimental_option('useAutomationExtension', False)
-
     # options.add_argument(f'--proxy-server={proxy}')
     return options
 
@@ -88,18 +87,17 @@ def run(category, iterations):
             chosen_row = choice(list(reader))
             chosen_proxy = choice(proxy_list)
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=get_options(chosen_proxy))
-            driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
             time.sleep(3)
             print(f'Chosen Proxy: {chosen_proxy}')
             driver.get(job_data[2])
 
             time.sleep(10)
-            nomination = driver.find_element("xpath", "//div[@data-ember-action-441='441']")
+            nomination = driver.find_element("xpath", "//div[@data-ember-action-411='411']")
             nomination.click()
 
 
             # NEED A BETTER WAY TO GET THIS
-            time.sleep(2)
+            time.sleep(12)
             your_nomination = driver.find_element(By.XPATH, '//input')
             your_nomination.clear()
             your_nomination.send_keys(job_data[1])
@@ -119,7 +117,6 @@ def run(category, iterations):
                 print(f"Filling in first name with {chosen_row[0]}")
                 first_name.send_keys(chosen_row[0])
             except NoSuchElementException:
-                driver.close()
                 print("Can't get around the captcha")
                 time.sleep(2)
                 continue
@@ -136,10 +133,10 @@ def run(category, iterations):
             time.sleep(13)
             postal_code.send_keys(Keys.RETURN)
 
-            time.sleep(10)
+            time.sleep(100)
             driver.close()
             count +=1
-            time.sleep(5)
+            time.sleep(400)
             print(count)
     print(f'Successful submissions: {count}')
 
