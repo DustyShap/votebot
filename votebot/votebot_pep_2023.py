@@ -9,6 +9,7 @@ from random import randrange, choice
 
 from fake_useragent import UserAgent
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
@@ -71,7 +72,7 @@ def run(iterations):
             # chosen_proxy = choice(proxy_list)
             driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=get_options())
             time.sleep(3)
-            print(f'Chosen Proxy: {chosen_proxy}')
+            # print(f'Chosen Proxy: {chosen_proxy}')
             driver.get("https://embed-953108.secondstreetapp.com/embed/7f6dc4de-93fc-4e72-b487-56fa670a8063/gallery/363342601")
             time.sleep(10)
             nomination = driver.find_element(By.CLASS_NAME, "ssButtonPrimary")
